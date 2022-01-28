@@ -42,7 +42,7 @@ function fetchUsers(): Promise<PrivateUser[]> {
     method: "POST",
     url: "https://dev-bzktuxhd.us.auth0.com/oauth/token",
     headers: { "content-type": "application/json" },
-    body: '{"client_id":"r5daVUntoRGE5eIFFDXRctt9Yd7g2Wf8","client_secret":"Y8gLlia4gXLyVJN_BeIDy5ukF_nXW4mXL07SjAme-DFBlsewABCvv_yiCCShq2Bh","audience":"https://dev-bzktuxhd.us.auth0.com/api/v2/","grant_type":"client_credentials"}',
+    body: `{"client_id":"r5daVUntoRGE5eIFFDXRctt9Yd7g2Wf8","client_secret":"${process.env.CLIENT_SECRET}","audience":"https://dev-bzktuxhd.us.auth0.com/api/v2/","grant_type":"client_credentials"}`,
   };
 
   return new Promise((resolve, reject) =>
