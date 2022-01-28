@@ -89,7 +89,9 @@ const handler: NextApiHandler = async (req, res) => {
         versions: {},
       };
 
-      await makeUserPackageAuthor(user, packageName);
+      if (!user.packages.includes(packageName)) {
+        await makeUserPackageAuthor(user, packageName);
+      }
     }
 
     if (!user.packages.includes(packageName)) {
@@ -202,7 +204,10 @@ const makeUserPackageAuthor = (user, packageName) => {
         return reject(error);
       }
 
-      user.packages.push(packageName);
+      if (!user.packages.includes(packageName)) {
+        user.packages.push(packageName);
+      }
+
       var userRequestOptions = {
         method: "PATCH",
         url: `https://dev-bzktuxhd.us.auth0.com/api/v2/users/${user.id}`,
