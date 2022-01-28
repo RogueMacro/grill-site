@@ -7,10 +7,11 @@ import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { PublicUser } from "../../lib/users";
 
 export default function Profile() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser]: [PublicUser, any] = useState(null);
   const [fetchError, setFetchError] = useState(null);
   const [isFetchingUser, setFetchingUser] = useState(false);
   const index = useContext(IndexContext);
@@ -27,8 +28,9 @@ export default function Profile() {
         setFetchError([response.status, response.statusText]);
         return;
       }
-      const json = await response.json();
-      setUser(json);
+      let user = await response.json();
+      user.created = new Date(user.created);
+      setUser(user);
     });
   }, []);
 
@@ -44,6 +46,8 @@ export default function Profile() {
   for (let key in index) {
     if (key.startsWith("")) packages[key] = index[key];
   }
+
+  console.log(user);
 
   return (
     <Stack direction="row" justifyContent="center" pt="10vh" spacing="5%">
