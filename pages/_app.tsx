@@ -174,7 +174,7 @@ function AuthProvider({ children }) {
   return (
     <Auth0Provider
       domain="dev-bzktuxhd.us.auth0.com"
-      clientId="0EKKYGRUBizA8QYUARGk3Rgxiln1h4Mq"
+      clientId={process.env.CLIENT_ID}
       redirectUri="http://localhost:3000/"
       audience="https://dev-bzktuxhd.us.auth0.com/api/v2/"
       scope="read:current_user create:current_user_metadata update:current_user_metadata"
