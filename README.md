@@ -27,7 +27,7 @@ You can install packages (or repositories) into the `BeefLibs` folder by using `
 
 # Publishing packages
 
-To start creating packages, get your API token on the website at Account > Settings > Authorization.
+To publish packages, you need to get your API token on the website at Account > Settings > Authorization.
 Run `grill login` and paste your token there.
 
-To publish a package, make sure you commit and push your changes, then run `grill publish`.
+After logging in through the CLI, make sure you commit and push your changes, then run `grill publish` and confirm the version and commit. It will not succeed if the commit isn't found remotely.
