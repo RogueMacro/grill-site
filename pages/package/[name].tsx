@@ -28,7 +28,7 @@ const PackageView = () => {
   const pkg = index[name];
   const versions = Object.keys(pkg.versions).sort().reverse();
   const latestVersion = versions.at(0);
-  const latestTag = pkg.versions[latestVersion];
+  const latestRev = pkg.versions[latestVersion].rev;
   versions.shift();
 
   if (!pkg.url.endsWith("/")) pkg.url += "/";
@@ -38,8 +38,8 @@ const PackageView = () => {
     "https://github.com",
     "https://raw.githubusercontent.com"
   );
-  readmeUrl += `${latestTag}/README.md`;
-  readmeUrl = "https://raw.githubusercontent.com/ai/size-limit/main/README.md";
+  readmeUrl += `${latestRev}/README.md`;
+  // readmeUrl = "https://raw.githubusercontent.com/ai/size-limit/main/README.md";
 
   fetch(readmeUrl)
     .then((reponse) => reponse.text())
@@ -53,15 +53,15 @@ const PackageView = () => {
       //   <SyntaxHighlighter langauge={language}>{code}</SyntaxHighlighter>
       // );
       const language = hljs.getLanguage(lang) ? lang : "plaintext";
-      console.log(hljs.highlight(code, { language }).value);
+      // console.log(hljs.highlight(code, { language }).value);
       return hljs.highlight(code, { language }).value;
     },
   });
   let dirtyReadme = marked.parse(readme);
-  dirtyReadme = dirtyReadme.replaceAll(
-    'src="./',
-    `src="${"https://raw.githubusercontent.com/ai/size-limit/main/"}`
-  );
+  // dirtyReadme = dirtyReadme.replaceAll(
+  //   'src="./',
+  //   `src="${"https://raw.githubusercontent.com/ai/size-limit/main/"}`
+  // );
 
   return (
     <>
@@ -138,9 +138,6 @@ const PackageView = () => {
           pl="1%"
           pr="1%"
         >
-          <SyntaxHighlighter language="javascript">
-            {"(num) => num + 1"}
-          </SyntaxHighlighter>
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(dirtyReadme, {
