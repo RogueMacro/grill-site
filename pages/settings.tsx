@@ -126,17 +126,6 @@ function AuthorizationMenu() {
     }
     setModalOpenState(val);
   };
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-  };
 
   useEffect(() => {
     if (secret !== confirmSecret) {
@@ -154,14 +143,25 @@ function AuthorizationMenu() {
       {token !== undefined && (
         <>
           <Button
-            display="inline"
-            sx={{ marginLeft: "5px" }}
+            sx={{ marginLeft: "5px", display: "inline" }}
             onClick={() => setModalOpen(true)}
           >
             New
           </Button>
           <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-            <Box sx={modalStyle}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 400,
+                backgroundColor: "background.paper",
+                border: "2px solid #000",
+                boxShadow: 24,
+                p: 4,
+              }}
+            >
               <Typography variant="h6">New Access Token</Typography>
               {token && (
                 <Typography fontSize="small" gutterBottom>
@@ -169,37 +169,14 @@ function AuthorizationMenu() {
                 </Typography>
               )}
 
-              {/* <TextField
-                size="small"
-                variant="filled"
-                label="Secret"
-                type="password"
-                onChange={(e) => setSecret(e.target.value)}
-                fullWidth
-                required
-              />
-              <TextField
-                size="small"
-                variant="filled"
-                label="Confirm secret"
-                type="password"
-                error={modalError !== ""}
-                helperText={modalError}
-                onChange={(e) => setConfirmSecret(e.target.value)}
-                fullWidth
-                required
-              /> */}
-
               <Box
                 sx={{
-                  // m: 1,
                   position: "relative",
                 }}
               >
                 <Button
                   variant="contained"
                   fullWidth
-                  // disabled={modalError !== "" || secret.length == 0}
                   onClick={async () => {
                     await createToken();
                     setModalOpen(false);
