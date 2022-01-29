@@ -171,17 +171,21 @@ function NavBar() {
 }
 
 function AuthProvider({ children }) {
-  return (
-    <Auth0Provider
-      domain="dev-bzktuxhd.us.auth0.com"
-      clientId={process.env.CLIENT_ID}
-      redirectUri={window.location.origin}
-      audience="https://dev-bzktuxhd.us.auth0.com/api/v2/"
-      scope="read:current_user create:current_user_metadata update:current_user_metadata"
-    >
-      {children}
-    </Auth0Provider>
-  );
+  if (typeof window !== "undefined") {
+    return (
+      <Auth0Provider
+        domain="dev-bzktuxhd.us.auth0.com"
+        clientId={process.env.CLIENT_ID}
+        redirectUri={window.location.origin}
+        audience="https://dev-bzktuxhd.us.auth0.com/api/v2/"
+        scope="read:current_user create:current_user_metadata update:current_user_metadata"
+      >
+        {children}
+      </Auth0Provider>
+    );
+  } else {
+    return <>{children}</>;
+  }
 }
 
 export function App({ Component, pageProps, ...appProps }) {
