@@ -63,7 +63,7 @@ function NavBar() {
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar>
+        <AppBar sx={{ paddingX: "10vw" }}>
           <Toolbar>
             <Image width={40} height={40} src="/grill.svg" alt="" />
             <Link href="/" passHref={true}>
@@ -83,9 +83,28 @@ function NavBar() {
                 </IconButton>
               </>
             ) : (
-              <Button color="inherit" onClick={() => loginWithPopup()}>
-                Login
-              </Button>
+              <>
+                <Button
+                  color="inherit"
+                  size="small"
+                  sx={{
+                    textTransform: "none",
+                    fontSize: "20px",
+                    marginRight: "20px",
+                  }}
+                  href="https://github.com/RogueMacro/grill/releases/latest"
+                >
+                  Download
+                </Button>
+                <Button
+                  color="inherit"
+                  size="small"
+                  sx={{ textTransform: "none", fontSize: "20px" }}
+                  onClick={() => loginWithPopup()}
+                >
+                  Login
+                </Button>
+              </>
             )}
           </Toolbar>
         </AppBar>
