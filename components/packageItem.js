@@ -3,6 +3,7 @@ import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import compareVersions from "compare-versions";
 
 export default function PackageItem(name, data) {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function PackageItem(name, data) {
             display="inline"
             marginLeft="10px"
           >
-            v{Object.keys(data.versions).at(-1)}
+            v{Object.keys(data.versions).sort(compareVersions).at(-1)}
           </Typography>
           <Typography fontSize={14} color="text.secondary">
             {data.description === undefined ? (

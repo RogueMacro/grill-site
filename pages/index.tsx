@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext } from "react";
-import Typography from "@mui/material/Typography";
+import { useState, useEffect, useContext, useCallback } from "react";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
@@ -10,17 +9,20 @@ export default function PackageSearch() {
   const [searched, setSearched] = useState({});
 
   const index = useContext(IndexContext);
-  const requestSearch = (searchedVal: string) => {
-    var filtered = {};
-    for (let key in index) {
-      if (key.startsWith(searchedVal)) filtered[key] = index[key];
-    }
-    setSearched(filtered);
-  };
+  const requestSearch = useCallback(
+    (searchedVal: string) => {
+      var filtered = {};
+      for (let key in index) {
+        if (key.startsWith(searchedVal)) filtered[key] = index[key];
+      }
+      setSearched(filtered);
+    },
+    [index]
+  );
 
   useEffect(() => {
     requestSearch("");
-  });
+  }, [requestSearch]);
 
   return (
     <>
