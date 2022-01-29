@@ -176,7 +176,7 @@ function AuthProvider({ children }) {
       <Auth0Provider
         domain="dev-bzktuxhd.us.auth0.com"
         clientId="0EKKYGRUBizA8QYUARGk3Rgxiln1h4Mq"
-        redirectUri={window.location.origin}
+        redirectUri="https://grillpm.vercel.app"
         audience="https://dev-bzktuxhd.us.auth0.com/api/v2/"
         scope="read:current_user create:current_user_metadata update:current_user_metadata"
       >
