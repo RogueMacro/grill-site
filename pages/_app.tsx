@@ -175,7 +175,7 @@ function AuthProvider({ children }) {
     return (
       <Auth0Provider
         domain="dev-bzktuxhd.us.auth0.com"
-        clientId={process.env.CLIENT_ID}
+        clientId="0EKKYGRUBizA8QYUARGk3Rgxiln1h4Mq"
         redirectUri={window.location.origin}
         audience="https://dev-bzktuxhd.us.auth0.com/api/v2/"
         scope="read:current_user create:current_user_metadata update:current_user_metadata"
@@ -196,7 +196,7 @@ export function App({ Component, pageProps, ...appProps }) {
         setPackages(index.packages);
       });
     }
-  });
+  }, [packages]);
 
   const router = useRouter();
   if (router.pathname.startsWith("/login")) {

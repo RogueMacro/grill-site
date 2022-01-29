@@ -13,7 +13,7 @@ export default function PackageItem(name, data) {
   };
 
   return (
-    <Card key={name} elevation="2">
+    <Card key={name} elevation={2}>
       <CardActionArea onClick={handleClick}>
         <CardContent>
           <Typography fontSize={20} fontWeight="bold" display="inline">
