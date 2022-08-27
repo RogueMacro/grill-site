@@ -7,6 +7,7 @@ export class Index {
 
 export class PackageEntry {
   url: string;
+  description: string;
   versions: { [key: string]: PackageVersion };
 }
 

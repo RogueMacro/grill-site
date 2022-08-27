@@ -40,6 +40,10 @@ const handler: NextApiHandler = async (req, res) => {
       return onResponse(res, resolve)
         .status(400)
         .json({ message: "'metadata.dependencies' not found in body." });
+    } else if (!body.metadata.hasOwnProperty("description")) {
+      return onResponse(res, resolve)
+        .status(400)
+        .json({ message: "'metadata.description' not found in body." });
     }
 
     const accessToken: string = body.access_token;
@@ -48,10 +52,11 @@ const handler: NextApiHandler = async (req, res) => {
       "base64"
     ).toString();
     const packageName: string = body.package;
-    const { version, revision, dependencies } = body.metadata as {
+    const { version, revision, dependencies, description } = body.metadata as {
       version: string;
       revision: string;
       dependencies: { [key: string]: string };
+      description: string;
     };
 
     const users = await getPrivateUsers();
@@ -86,6 +91,7 @@ const handler: NextApiHandler = async (req, res) => {
 
       index.packages[packageName] = {
         url: body.create_url,
+        description: "",
         versions: {},
       };
 
@@ -119,6 +125,8 @@ const handler: NextApiHandler = async (req, res) => {
       rev: revision,
       deps: dependencies,
     };
+
+    index.packages[packageName].description = description;
 
     request.put(
       "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml",
