@@ -29,11 +29,7 @@ export default function PackageItem(name, data) {
             v{Object.keys(data.versions).sort(compareVersions).at(-1)}
           </Typography>
           <Typography fontSize={14} color="text.secondary">
-            {data.description === undefined ? (
-              <i>*nothingness*</i>
-            ) : (
-              data.description
-            )}
+            {data.description}
           </Typography>
         </CardContent>
       </CardActionArea>
