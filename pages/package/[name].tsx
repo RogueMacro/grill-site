@@ -5,7 +5,8 @@ import { IndexContext } from "../../components/context";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
+import Popover from "@mui/material/Popover";
 import { marked } from "marked";
 import { renderToString } from "react-dom/server";
 import { HelmetProvider, Helmet } from "react-helmet-async";
@@ -13,6 +14,7 @@ import sanitizeHtml from "sanitize-html";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import hljs from "highlight.js";
+import copy from "clipboard-copy";
 
 const PackageView = () => {
   const router = useRouter();
@@ -20,12 +22,16 @@ const PackageView = () => {
   const index = useContext(IndexContext);
   const [readme, setReadme] = useState("loading...");
 
+  const [copiedPopupAnchorEl, setCopiedPopupAnchorEl] = useState(null);
+  const copiedPopupOpen = Boolean(copiedPopupAnchorEl);
+
   if (!Object.keys(index).includes(name)) {
     const title = `Could not find package '${name}'`;
     return <ErrorPage statusCode={404} title={title} />;
   }
 
   const pkg = index[name];
+  const description = pkg.description;
   const versions = Object.keys(pkg.versions).sort().reverse();
   const latestVersion = versions.at(0);
   const latestRev = pkg.versions[latestVersion].rev;
@@ -86,6 +92,10 @@ const PackageView = () => {
           <br />
           <Typography>{name}</Typography>
           <br />
+          <Typography variant="overline">Description</Typography>
+          <br />
+          <Typography>{description}</Typography>
+          <br />
           <Typography variant="overline">Repository</Typography>
           <br />
           <Button
@@ -105,19 +115,46 @@ const PackageView = () => {
               color="secondary"
               size="small"
               style={{ marginRight: "10px" }}
+              onClick={(event) => {
+                copy(name + ' = "' + latestVersion + '"');
+                setCopiedPopupAnchorEl(event.currentTarget);
+                setTimeout(() => setCopiedPopupAnchorEl(null), 1500);
+              }}
             >
               {latestVersion} (latest)
             </Button>
+
             {versions.map((key) => (
               <Button
                 key={key}
                 variant="contained"
                 size="small"
                 style={{ marginRight: "10px" }}
+                onClick={(event) => {
+                  copy(name + ' = "' + key + '"');
+                  setCopiedPopupAnchorEl(event.currentTarget);
+                  setTimeout(() => setCopiedPopupAnchorEl(null), 1500);
+                }}
               >
                 {key}
               </Button>
             ))}
+
+            <Popover
+              open={copiedPopupOpen}
+              anchorEl={copiedPopupAnchorEl}
+              onClose={() => setCopiedPopupAnchorEl(null)}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              <Typography sx={{ px: 1 }}>Copied!</Typography>
+            </Popover>
           </Grid>
         </Grid>
       </Grid>
