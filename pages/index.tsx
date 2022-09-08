@@ -1,27 +1,40 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { IndexContext } from "../components/context";
 import PackageItem from "../components/packageItem";
+import Fuse from "fuse.js";
 
 export default function PackageSearch() {
   const [searched, setSearched] = useState({});
 
   const index = useContext(IndexContext);
+
+  const fuse = useMemo(() => {
+    var searchIndex = [];
+    for (let key in index) {
+      searchIndex.push({
+        title: key,
+        description: index[key].description,
+      });
+    }
+    return new Fuse(searchIndex, {
+      keys: ["title", "description"],
+    });
+  }, [index]);
+
   const requestSearch = useCallback(
     (searchedVal: string) => {
-      var filtered = {};
-      for (let key in index) {
-        if (key.startsWith(searchedVal)) filtered[key] = index[key];
-      }
-      setSearched(filtered);
+      if (searchedVal == "") searchedVal = " ";
+      const results = fuse.search(searchedVal);
+      setSearched(results);
     },
-    [index]
+    [fuse]
   );
 
   useEffect(() => {
-    requestSearch("");
+    requestSearch(" ");
   }, [requestSearch]);
 
   return (
@@ -40,9 +53,11 @@ export default function PackageSearch() {
           onChange={(event) => requestSearch(event.target.value)}
         />
         <Stack spacing={3} style={{ width: "90%", maxWidth: "1000px" }}>
-          {Object.keys(searched).map((key) => {
-            return PackageItem(key, index[key]);
-          })}
+          {Object.values(searched)
+            .sort((a: any, b: any) => a.refIndex - b.refIndex)
+            .map((i: any) => {
+              return PackageItem(i.item.title, index[i.item.title]);
+            })}
         </Stack>
       </Grid>
     </>
