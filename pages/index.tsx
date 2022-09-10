@@ -21,6 +21,7 @@ export default function PackageSearch() {
     }
     return new Fuse(searchIndex, {
       keys: ["title", "description"],
+      shouldSort: true,
     });
   }, [index]);
 
@@ -53,11 +54,9 @@ export default function PackageSearch() {
           onChange={(event) => requestSearch(event.target.value)}
         />
         <Stack spacing={3} style={{ width: "90%", maxWidth: "1000px" }}>
-          {Object.values(searched)
-            .sort((a: any, b: any) => a.refIndex - b.refIndex)
-            .map((i: any) => {
-              return PackageItem(i.item.title, index[i.item.title]);
-            })}
+          {Object.values(searched).map((i: any) => {
+            return PackageItem(i.refIndex, index[i.item.title]);
+          })}
         </Stack>
       </Grid>
     </>
