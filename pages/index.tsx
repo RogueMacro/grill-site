@@ -55,7 +55,7 @@ export default function PackageSearch() {
         />
         <Stack spacing={3} style={{ width: "90%", maxWidth: "1000px" }}>
           {Object.values(searched).map((i: any) => {
-            return PackageItem(i.refIndex, index[i.item.title]);
+            return PackageItem(i.item.title, index[i.item.title]);
           })}
         </Stack>
       </Grid>
