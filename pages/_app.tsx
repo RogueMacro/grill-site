@@ -75,6 +75,18 @@ function NavBar() {
                 GRILL
               </Typography>
             </Link>
+            <Button
+              color="inherit"
+              size="small"
+              sx={{
+                textTransform: "none",
+                fontSize: "20px",
+                marginRight: "20px",
+              }}
+              href="https://github.com/RogueMacro/grill/releases/latest"
+            >
+              Download
+            </Button>
             {isAuthenticated ? (
               <>
                 <Typography>{username}</Typography>
@@ -83,28 +95,14 @@ function NavBar() {
                 </IconButton>
               </>
             ) : (
-              <>
-                <Button
-                  color="inherit"
-                  size="small"
-                  sx={{
-                    textTransform: "none",
-                    fontSize: "20px",
-                    marginRight: "20px",
-                  }}
-                  href="https://github.com/RogueMacro/grill/releases/latest"
-                >
-                  Download
-                </Button>
-                <Button
-                  color="inherit"
-                  size="small"
-                  sx={{ textTransform: "none", fontSize: "20px" }}
-                  onClick={() => loginWithPopup()}
-                >
-                  Login
-                </Button>
-              </>
+              <Button
+                color="inherit"
+                size="small"
+                sx={{ textTransform: "none", fontSize: "20px" }}
+                onClick={() => loginWithPopup()}
+              >
+                Login
+              </Button>
             )}
           </Toolbar>
         </AppBar>
