@@ -3,6 +3,16 @@ import TOML from "@iarna/toml";
 export class Index {
   packages: { [key: string]: PackageEntry };
   sha: string;
+
+  find(packageName: string): PackageEntry {
+    for (let key in this.packages) {
+      if (key.toLowerCase() == packageName.toLowerCase()) {
+        return this.packages[key];
+      }
+    }
+
+    return null;
+  }
 }
 
 export class PackageEntry {

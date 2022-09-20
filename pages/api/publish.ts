@@ -74,7 +74,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     let index = await getIndex();
-    if (!(packageName in index.packages)) {
+    if (!index.find(packageName)) {
       if (!body.hasOwnProperty("create_url")) {
         return onResponse(res, resolve).status(400).json({
           message:
@@ -108,14 +108,14 @@ const handler: NextApiHandler = async (req, res) => {
         });
     }
 
-    const versions = index.packages[packageName].versions;
+    const versions = index.find(packageName).versions;
     if (version in versions) {
       return onResponse(res, resolve)
         .status(400)
         .json({ message: "Version already exists." });
     }
 
-    if (!(await revisionExists(index.packages[packageName].url, revision))) {
+    if (!(await revisionExists(index.find(packageName).url, revision))) {
       return onResponse(res, resolve)
         .status(400)
         .json({ message: "Revision was not found." });
@@ -126,7 +126,7 @@ const handler: NextApiHandler = async (req, res) => {
       deps: dependencies,
     };
 
-    index.packages[packageName].description = description;
+    index.find(packageName).description = description;
 
     request.put(
       "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml",
