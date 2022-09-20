@@ -42,13 +42,6 @@ export default function Profile() {
     return <>loading...</>;
   }
 
-  var packages = {};
-  for (let key in index) {
-    if (key.startsWith("")) packages[key] = index[key];
-  }
-
-  console.log(user);
-
   return (
     <Stack direction="row" justifyContent="center" pt="10vh" spacing="5%">
       <Stack component={Card} width="20%" height="15vh" padding="1%">
