@@ -11,13 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Modal from "@mui/material/Modal";
-import TextField from "@mui/material/TextField";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Tooltip from "@mui/material/Tooltip";
-import Link from "@mui/material/Link";
 import axios from "axios";
-import AES from "crypto-js/aes";
 
 const ACCESS_TOKEN_LENGTH = 32;
 
@@ -63,7 +57,7 @@ function AuthorizationMenu() {
 
         const { user_metadata } = await metadataResponse.json();
 
-        if (user_metadata.access_token) {
+        if (user_metadata && user_metadata.access_token) {
           setToken(user_metadata.access_token);
         } else {
           setToken(null);
