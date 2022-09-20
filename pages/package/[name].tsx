@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import { IndexContext } from "../../components/context";
@@ -15,22 +15,56 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import hljs from "highlight.js";
 import copy from "clipboard-copy";
+import { PublicUser } from "../../lib/users";
+import Link from "@mui/material/Link";
 
 const PackageView = () => {
   const router = useRouter();
-  const name = router.query.name as string;
+  const [name, setName] = useState(null);
+  useEffect(() => {
+    if (router.isReady) {
+      const pkgName = router.query.name as string;
+      setName(pkgName);
+    }
+  }, [router.isReady]);
+
   const index = useContext(IndexContext);
   const [readme, setReadme] = useState("loading...");
+  const [author, setAuthor] = useState<PublicUser>(null);
+  const [error, setError] = useState(null);
 
   const [copiedPopupAnchorEl, setCopiedPopupAnchorEl] = useState(null);
   const copiedPopupOpen = Boolean(copiedPopupAnchorEl);
 
-  if (!Object.keys(index).includes(name)) {
-    const title = `Could not find package '${name}'`;
-    return <ErrorPage statusCode={404} title={title} />;
+  useEffect(() => {
+    if (!name) {
+      return;
+    }
+
+    if (!index.find(name)) {
+      setError({ status: 404, message: `Could not find package '${name}'` });
+      return;
+    }
+
+    fetch(`/api/author/${name}`).then(async (response) => {
+      if (response.status !== 200) {
+        setError({ status: response.status, message: response.statusText });
+        return;
+      }
+      let user = await response.json();
+      setAuthor(user);
+    });
+  }, [name, index]);
+
+  if (error) {
+    return <ErrorPage statusCode={error.status} title={error.message} />;
   }
 
-  const pkg = index[name];
+  if (!author) {
+    return <></>;
+  }
+
+  const pkg = index.find(name);
   const description = pkg.description;
   const versions = Object.keys(pkg.versions).sort().reverse();
   const latestVersion = versions.at(0);
@@ -45,7 +79,6 @@ const PackageView = () => {
     "https://raw.githubusercontent.com"
   );
   readmeUrl += `${latestRev}/README.md`;
-  // readmeUrl = "https://raw.githubusercontent.com/ai/size-limit/main/README.md";
 
   fetch(readmeUrl)
     .then((reponse) => reponse.text())
@@ -55,19 +88,11 @@ const PackageView = () => {
 
   marked.setOptions({
     highlight: (code, lang) => {
-      // return renderToString(
-      //   <SyntaxHighlighter langauge={language}>{code}</SyntaxHighlighter>
-      // );
       const language = hljs.getLanguage(lang) ? lang : "plaintext";
-      // console.log(hljs.highlight(code, { language }).value);
       return hljs.highlight(code, { language }).value;
     },
   });
   let dirtyReadme = marked.parse(readme);
-  // dirtyReadme = dirtyReadme.replaceAll(
-  //   'src="./',
-  //   `src="${"https://raw.githubusercontent.com/ai/size-limit/main/"}`
-  // );
 
   return (
     <>
@@ -88,9 +113,25 @@ const PackageView = () => {
         }}
       >
         <Grid ml="70vw">
-          <Typography variant="overline">Package</Typography>
-          <br />
-          <Typography>{name}</Typography>
+          <Grid container spacing="10vw">
+            <Grid item>
+              <Typography variant="overline">Package</Typography>
+              <br />
+              <Typography>{name}</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="overline">Author</Typography>
+              <br />
+              <Link
+                underline="hover"
+                color="inherit"
+                href={`${window.location.origin}/user/${author.username}`}
+              >
+                {author.username}
+              </Link>
+            </Grid>
+          </Grid>
+
           <br />
           <Typography variant="overline">Description</Typography>
           <br />

@@ -13,10 +13,10 @@ export default function PackageSearch() {
 
   const fuse = useMemo(() => {
     var searchIndex = [];
-    for (let key in index) {
+    for (let key in index.packages) {
       searchIndex.push({
         title: key,
-        description: index[key].description,
+        description: index.packages[key].description,
       });
     }
     return new Fuse(searchIndex, {
@@ -55,7 +55,7 @@ export default function PackageSearch() {
         />
         <Stack spacing={3} style={{ width: "90%", maxWidth: "1000px" }}>
           {Object.values(searched).map((i: any) => {
-            return PackageItem(i.item.title, index[i.item.title]);
+            return PackageItem(i.item.title, index.packages[i.item.title]);
           })}
         </Stack>
       </Grid>

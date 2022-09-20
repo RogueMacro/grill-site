@@ -206,19 +206,19 @@ function AuthProvider({ children }) {
 }
 
 export function App({ Component, pageProps, ...appProps }) {
-  const [packages, setPackages] = useState(null);
+  const [index, setIndex] = useState(null);
   useEffect(() => {
-    if (packages === null) {
+    if (index === null) {
       getIndex().then((index) => {
-        setPackages(index.packages);
+        setIndex(index);
       });
     }
-  }, [packages]);
+  }, [index]);
 
   const router = useRouter();
   if (router.pathname.startsWith("/login")) {
-    if (packages !== undefined) {
-      setPackages(undefined);
+    if (index !== undefined) {
+      setIndex(undefined);
     }
     return (
       <AuthProvider>
@@ -237,11 +237,11 @@ export function App({ Component, pageProps, ...appProps }) {
 
       <AuthProvider>
         <ThemeProvider theme={theme}>
-          <IndexContext.Provider value={packages}>
+          <IndexContext.Provider value={index}>
             <CssBaseline />
             <NavBar />
             <Box pt="64px" width="100%">
-              {packages ? <Component {...pageProps} /> : <>loading...</>}
+              {index ? <Component {...pageProps} /> : <>loading...</>}
             </Box>
           </IndexContext.Provider>
         </ThemeProvider>

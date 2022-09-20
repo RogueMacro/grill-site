@@ -51,6 +51,10 @@ function fetchUsers(): Promise<PrivateUser[]> {
         return reject(error);
       }
 
+      if (response.statusCode != 200) {
+        return reject(JSON.parse(body));
+      }
+
       var userRequestOptions = {
         method: "GET",
         url: `https://dev-bzktuxhd.us.auth0.com/api/v2/users`,
@@ -62,6 +66,10 @@ function fetchUsers(): Promise<PrivateUser[]> {
       request(userRequestOptions, (error, response, body) => {
         if (error) {
           return reject(error);
+        }
+
+        if (response.statusCode != 200) {
+          return reject(JSON.parse(body));
         }
 
         const users = JSON.parse(body).map((user) => {
@@ -102,4 +110,18 @@ export const getPrivateUsers = async (): Promise<PrivateUser[]> => {
   }
 
   return users;
+};
+
+export const getAuthor = async (packageName: string): Promise<PublicUser> => {
+  const lowerPackageName = packageName.toLowerCase();
+  const users = await getPublicUsers();
+  for (let user of users) {
+    for (let pkg of user.packages) {
+      if (pkg.toLowerCase() == lowerPackageName) {
+        return user;
+      }
+    }
+  }
+
+  return null;
 };

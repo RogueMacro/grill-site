@@ -13,17 +13,18 @@ export default function Profile() {
   const router = useRouter();
   const [user, setUser]: [PublicUser, any] = useState(null);
   const [fetchError, setFetchError] = useState(null);
-  const [isFetchingUser, setFetchingUser] = useState(false);
   const index = useContext(IndexContext);
 
   useEffect(() => {
-    setFetchingUser(true);
+    if (!router.isReady) {
+      return;
+    }
+
     const identifier = router.query.identifier;
     const query = router.query.hasOwnProperty("id")
       ? `id:${identifier}`
       : `username:${identifier}`;
     fetch(`/api/users?q=${query}`).then(async (response) => {
-      setFetchingUser(false);
       if (response.status !== 200) {
         setFetchError([response.status, response.statusText]);
         return;
@@ -32,13 +33,13 @@ export default function Profile() {
       user.created = new Date(user.created);
       setUser(user);
     });
-  }, []);
+  }, [router.isReady]);
 
   if (fetchError) {
     return <ErrorPage statusCode={fetchError[0]} title={fetchError[1]} />;
   }
 
-  if (isFetchingUser || (!isFetchingUser && !user)) {
+  if (!user) {
     return <>loading...</>;
   }
 
@@ -58,7 +59,7 @@ export default function Profile() {
       </Stack>
       <Stack width="20%" spacing="20px">
         <Typography variant="h4">Packages ({user.packages.length})</Typography>
-        {user.packages.map((pkg) => PackageItem(pkg, index[pkg]))}
+        {user.packages.map((pkg) => PackageItem(pkg, index.packages[pkg]))}
       </Stack>
     </Stack>
   );
