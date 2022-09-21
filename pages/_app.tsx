@@ -83,6 +83,18 @@ function NavBar() {
                 fontSize: "20px",
                 marginRight: "20px",
               }}
+              href="https://roguemacro.gitbook.io/grill"
+            >
+              Documentation
+            </Button>
+            <Button
+              color="inherit"
+              size="small"
+              sx={{
+                textTransform: "none",
+                fontSize: "20px",
+                marginRight: "20px",
+              }}
               href="https://github.com/RogueMacro/grill/releases/latest"
             >
               Download
