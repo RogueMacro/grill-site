@@ -31,6 +31,11 @@ const theme = createTheme({
     fontWeightRegular: 400,
     fontWeightMedium: 500,
   },
+  palette: {
+    background: {
+      default: "#F9F7EC",
+    },
+  },
 });
 
 function NavBar() {

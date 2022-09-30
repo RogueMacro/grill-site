@@ -5,6 +5,9 @@ import Stack from "@mui/material/Stack";
 import { IndexContext } from "../components/context";
 import PackageItem from "../components/packageItem";
 import Fuse from "fuse.js";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 export default function PackageSearch() {
   const [searched, setSearched] = useState({});
@@ -38,27 +41,72 @@ export default function PackageSearch() {
     requestSearch(" ");
   }, [requestSearch]);
 
+  const sideBarWidth = "50vw";
+  const [newlyPublishedCount, setNewlyPublishedCount] = useState(5);
+
   return (
     <>
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justifyContent="top"
-        paddingTop="10%"
-      >
-        <TextField
-          label="Search..."
-          style={{ width: "90%", maxWidth: "1000px", marginBottom: "20px" }}
-          onChange={(event) => requestSearch(event.target.value)}
-        />
-        <Stack spacing={3} style={{ width: "90%", maxWidth: "1000px" }}>
-          {Object.values(searched).map((i: any) => {
-            return PackageItem(i.item.title, index.packages[i.item.title]);
-          })}
-        </Stack>
-      </Grid>
+      <Typography textAlign="center" paddingTop="5vh" variant="h2">
+        All Packages
+      </Typography>
+      <Box display="flex">
+        <Box width={sideBarWidth}></Box>
+        <Grid
+          container
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="top"
+          paddingTop="5vh"
+        >
+          <TextField
+            label="Search..."
+            style={{
+              width: "100%",
+              marginBottom: "20px",
+              backgroundColor: "white",
+            }}
+            onChange={(event) => requestSearch(event.target.value)}
+          />
+          <Stack spacing={2} style={{ width: "100%" }}>
+            {Object.values(searched).map((i: any) => {
+              return PackageItem(i.item.title, index.packages[i.item.title]);
+            })}
+          </Stack>
+        </Grid>
+
+        <Grid
+          container
+          width={sideBarWidth}
+          spacing={0}
+          direction="column"
+          alignItems="center"
+          justifyContent="top"
+        >
+          <Typography variant="h4" marginBottom="6px">
+            Newly published
+          </Typography>
+          <Stack width="80%" spacing={1}>
+            {Object.entries(index.packages)
+              .filter((_, i) => i < newlyPublishedCount)
+              .map(([pkg, data]) => {
+                return PackageItem(pkg, data);
+              })}
+          </Stack>
+          {Object.entries(index.packages).length > newlyPublishedCount ? (
+            <>
+              <br />
+              <Button
+                onClick={() => setNewlyPublishedCount(newlyPublishedCount + 5)}
+              >
+                Show More
+              </Button>
+            </>
+          ) : (
+            <></>
+          )}
+        </Grid>
+      </Box>
     </>
   );
 }

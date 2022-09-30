@@ -107,7 +107,7 @@ const PackageView = () => {
           width: "100vw%",
           height: "50vh",
           padding: "20px",
-          backgroundColor: "#F9F7F5",
+          backgroundColor: "#f0eee4",
           position: "sticky",
           top: "25vh",
         }}
