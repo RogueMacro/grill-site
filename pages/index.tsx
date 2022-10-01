@@ -8,10 +8,11 @@ import Fuse from "fuse.js";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import useTheme from "@mui/styles/useTheme";
 
 export default function PackageSearch() {
+  const isDarkTheme = useTheme().palette.mode === "dark";
   const [searched, setSearched] = useState({});
-
   const index = useContext(IndexContext);
 
   const fuse = useMemo(() => {
@@ -61,10 +62,10 @@ export default function PackageSearch() {
         >
           <TextField
             label="Search..."
-            style={{
+            sx={{
               width: "100%",
               marginBottom: "20px",
-              backgroundColor: "white",
+              backgroundColor: isDarkTheme ? "" : "white",
             }}
             onChange={(event) => requestSearch(event.target.value)}
           />

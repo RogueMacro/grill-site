@@ -22,8 +22,14 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/router";
 import { getIndex } from "../lib/index";
+// it could be your App.tsx file or theme file that is included in your tsconfig.json
+import { Theme } from "@mui/material/styles";
 
-const theme = createTheme({
+declare module "@mui/styles/defaultTheme" {
+  interface DefaultTheme extends Theme {}
+}
+
+const baseTheme = {
   typography: {
     fontFamily: `"SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", "Monospace"`,
     fontSize: 14,
@@ -31,12 +37,69 @@ const theme = createTheme({
     fontWeightRegular: 400,
     fontWeightMedium: 500,
   },
+};
+
+const lightTheme = createTheme({
+  ...baseTheme,
   palette: {
     background: {
       default: "#F9F7EC",
     },
   },
 });
+
+const darkTheme = createTheme({
+  ...baseTheme,
+  palette: {
+    mode: "dark",
+    secondary: { main: "#7830ec" },
+  },
+});
+
+export default function App({ Component, pageProps, ...appProps }) {
+  const [index, setIndex] = useState(null);
+  useEffect(() => {
+    if (index === null) {
+      getIndex().then((index) => {
+        setIndex(index);
+      });
+    }
+  }, [index]);
+
+  const router = useRouter();
+  if (router.pathname.startsWith("/login")) {
+    if (index !== undefined) {
+      setIndex(undefined);
+    }
+    return (
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    );
+  }
+
+  return (
+    <>
+      <HelmetProvider>
+        <Helmet>
+          <title>Grill - Beef Package Manager</title>
+        </Helmet>
+      </HelmetProvider>
+
+      <AuthProvider>
+        <ThemeProvider theme={lightTheme}>
+          <IndexContext.Provider value={index}>
+            <CssBaseline />
+            <NavBar />
+            <Box pt="64px" width="100%">
+              {index ? <Component {...pageProps} /> : <>loading...</>}
+            </Box>
+          </IndexContext.Provider>
+        </ThemeProvider>
+      </AuthProvider>
+    </>
+  );
+}
 
 function NavBar() {
   const { loginWithPopup, logout, user, isAuthenticated, isLoading } =
@@ -221,50 +284,3 @@ function AuthProvider({ children }) {
     return <>{children}</>;
   }
 }
-
-export function App({ Component, pageProps, ...appProps }) {
-  const [index, setIndex] = useState(null);
-  useEffect(() => {
-    if (index === null) {
-      getIndex().then((index) => {
-        setIndex(index);
-      });
-    }
-  }, [index]);
-
-  const router = useRouter();
-  if (router.pathname.startsWith("/login")) {
-    if (index !== undefined) {
-      setIndex(undefined);
-    }
-    return (
-      <AuthProvider>
-        <Component {...pageProps} />
-      </AuthProvider>
-    );
-  }
-
-  return (
-    <>
-      <HelmetProvider>
-        <Helmet>
-          <title>Grill - Beef Package Manager</title>
-        </Helmet>
-      </HelmetProvider>
-
-      <AuthProvider>
-        <ThemeProvider theme={theme}>
-          <IndexContext.Provider value={index}>
-            <CssBaseline />
-            <NavBar />
-            <Box pt="64px" width="100%">
-              {index ? <Component {...pageProps} /> : <>loading...</>}
-            </Box>
-          </IndexContext.Provider>
-        </ThemeProvider>
-      </AuthProvider>
-    </>
-  );
-}
-
-export default App;

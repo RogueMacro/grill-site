@@ -17,8 +17,11 @@ import hljs from "highlight.js";
 import copy from "clipboard-copy";
 import { PublicUser } from "../../lib/users";
 import Link from "@mui/material/Link";
+import { useTheme } from "@mui/styles";
 
 const PackageView = () => {
+  const isDarkTheme = useTheme().palette.mode === "dark";
+
   const router = useRouter();
   const [name, setName] = useState(null);
   useEffect(() => {
@@ -107,7 +110,7 @@ const PackageView = () => {
           width: "100vw%",
           height: "50vh",
           padding: "20px",
-          backgroundColor: "#f0eee4",
+          backgroundColor: isDarkTheme ? "#1a1919" : "#f0eee4",
           position: "sticky",
           top: "25vh",
         }}
