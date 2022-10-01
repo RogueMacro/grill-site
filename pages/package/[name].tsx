@@ -29,7 +29,7 @@ const PackageView = () => {
       const pkgName = router.query.name as string;
       setName(pkgName);
     }
-  }, [router.isReady]);
+  }, [router.isReady, router.query.name]);
 
   const index = useContext(IndexContext);
   const [readme, setReadme] = useState("loading...");
