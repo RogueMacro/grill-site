@@ -18,6 +18,9 @@ import copy from "clipboard-copy";
 import { PublicUser } from "../../lib/users";
 import Link from "@mui/material/Link";
 import { useTheme } from "@mui/styles";
+import CircularProgress from "@mui/material/CircularProgress";
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 
 const PackageView = () => {
   const isDarkTheme = useTheme().palette.mode === "dark";
@@ -64,7 +67,7 @@ const PackageView = () => {
   }
 
   if (!author) {
-    return <></>;
+    return <LinearProgress />;
   }
 
   const pkg = index.find(name);
@@ -84,7 +87,13 @@ const PackageView = () => {
   readmeUrl += `${latestRev}/README.md`;
 
   fetch(readmeUrl)
-    .then((reponse) => reponse.text())
+    .then((response) => {
+      if (response.status === 404) {
+        return "This package has no README.";
+      } else {
+        return response.text();
+      }
+    })
     .then((value) => {
       setReadme(value);
     });
