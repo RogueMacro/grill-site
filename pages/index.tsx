@@ -89,8 +89,8 @@ export default function PackageSearch() {
           </Typography>
           <Stack width="80%" spacing={1}>
             {Object.entries(index.packages)
-              .filter((_, i) => i < newlyPublishedCount)
               .reverse()
+              .filter((_, i) => i < newlyPublishedCount)
               .map(([pkg, data]) => {
                 return PackageItem(pkg, data);
               })}
