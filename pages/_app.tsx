@@ -15,46 +15,84 @@ import Divider from "@mui/material/Divider";
 import LocalShipping from "@mui/icons-material/LocalShipping";
 import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { IndexContext } from "../components/context";
 import { useEffect, useState } from "react";
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/router";
 import { getIndex } from "../lib/index";
-// it could be your App.tsx file or theme file that is included in your tsconfig.json
-import { Theme } from "@mui/material/styles";
+import {
+  createTheme,
+  PaletteColor,
+  PaletteColorOptions,
+} from "@mui/material/styles";
+import {
+  Experimental_CssVarsProvider as CssVarsProvider,
+  useColorScheme,
+  experimental_extendTheme,
+} from "@mui/material/styles";
+import "../styles/code.css";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
 
-declare module "@mui/styles/defaultTheme" {
-  interface DefaultTheme extends Theme {}
-}
-
-const baseTheme = {
+const base = createTheme({
   typography: {
-    fontFamily: `"SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", "Monospace"`,
-    fontSize: 14,
-    fontWeightLight: 300,
-    fontWeightRegular: 400,
-    fontWeightMedium: 500,
+    fontFamily: "Hubot",
   },
-};
-
-const lightTheme = createTheme({
-  ...baseTheme,
-  palette: {
-    background: {
-      default: "#F9F7EC",
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: `
+            @font-face {
+              font-family: 'Hubot';
+              font-style: normal;
+              font-display: swap;
+              font-weight: 400;
+              src: url(/fonts/HubotSans/Hubot-Sans.ttf) format('truetype') ,
+                   url(/fonts/HubotSans/Hubot-Sans-Bold.ttf) format('truetype');
+            }
+          `,
     },
   },
 });
 
-const darkTheme = createTheme({
-  ...baseTheme,
-  palette: {
-    mode: "dark",
-    secondary: { main: "#7830ec" },
+const theme = experimental_extendTheme(
+  {
+    colorSchemes: {
+      light: {
+        palette: {
+          background: {
+            package: "#f0eee4",
+          },
+          code: {
+            main: "#F6F8FA",
+          },
+        },
+      },
+      dark: {
+        palette: {
+          primary: {
+            main: "#ffa500",
+          },
+          secondary: {
+            main: "#7830ec",
+          },
+          text: {
+            primary: "#C8D0D9",
+          },
+          background: {
+            default: "#161B22",
+            paper: "#0D1117",
+            package: "#1c2027",
+          },
+          code: {
+            main: "#161B22",
+          },
+        },
+      },
+    },
   },
-});
+  base
+);
 
 export default function App({ Component, pageProps, ...appProps }) {
   const [index, setIndex] = useState(null);
@@ -87,7 +125,7 @@ export default function App({ Component, pageProps, ...appProps }) {
       </HelmetProvider>
 
       <AuthProvider>
-        <ThemeProvider theme={lightTheme}>
+        <CssVarsProvider theme={theme}>
           <IndexContext.Provider value={index}>
             <CssBaseline />
             <NavBar />
@@ -95,7 +133,7 @@ export default function App({ Component, pageProps, ...appProps }) {
               {index ? <Component {...pageProps} /> : <>loading...</>}
             </Box>
           </IndexContext.Provider>
-        </ThemeProvider>
+        </CssVarsProvider>
       </AuthProvider>
     </>
   );
@@ -128,10 +166,23 @@ function NavBar() {
 
   const router = useRouter();
 
+  const { mode, setMode } = useColorScheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    // for server-side rendering
+    // learn more at https://github.com/pacocoursey/next-themes#avoid-hydration-mismatch
+    return null;
+  }
+
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar sx={{ paddingX: "10vw" }}>
+        <AppBar sx={{ paddingLeft: "10vw" }}>
           <Toolbar>
             <Image width={40} height={40} src="/grill.svg" alt="" />
             <Link href="/" passHref={true}>
@@ -184,6 +235,18 @@ function NavBar() {
                 Login
               </Button>
             )}
+            <IconButton
+              color="inherit"
+              size="small"
+              sx={{
+                textTransform: "none",
+                fontSize: "20px",
+                marginLeft: "5vw",
+              }}
+              onClick={() => setMode(mode === "dark" ? "light" : "dark")}
+            >
+              {mode === "dark" ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
           </Toolbar>
         </AppBar>
       </Box>

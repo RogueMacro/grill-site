@@ -8,22 +8,23 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Popover from "@mui/material/Popover";
 import { marked } from "marked";
-import { renderToString } from "react-dom/server";
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import sanitizeHtml from "sanitize-html";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import hljs from "highlight.js";
 import copy from "clipboard-copy";
 import { PublicUser } from "../../lib/users";
 import Link from "@mui/material/Link";
-import { useTheme } from "@mui/styles";
-import CircularProgress from "@mui/material/CircularProgress";
 import LinearProgress from "@mui/material/LinearProgress";
+import "highlight.js/styles/github.css";
+import { toHtml } from "hast-util-to-html";
+import {
+  createStarryNight,
+  all as starryLanguages,
+} from "@wooorm/starry-night";
+import { useTheme } from "@mui/styles";
 import Box from "@mui/material/Box";
 
 const PackageView = () => {
-  const isDarkTheme = useTheme().palette.mode === "dark";
+  const theme = useTheme();
 
   const router = useRouter();
   const [name, setName] = useState(null);
@@ -36,6 +37,7 @@ const PackageView = () => {
 
   const index = useContext(IndexContext);
   const [readme, setReadme] = useState("loading...");
+  const [starryNight, setStarryNight] = useState(undefined);
   const [author, setAuthor] = useState<PublicUser>(null);
   const [error, setError] = useState(null);
 
@@ -61,6 +63,30 @@ const PackageView = () => {
       setAuthor(user);
     });
   }, [name, index]);
+
+  useEffect(() => {
+    async function getStarryNight() {
+      setStarryNight(await createStarryNight(starryLanguages));
+    }
+
+    if (starryNight === undefined) getStarryNight();
+  });
+
+  useEffect(() => {
+    if (!starryNight) return;
+
+    marked.setOptions({
+      highlight: (code, lang) => {
+        let scope = starryNight.flagToScope(lang);
+        if (scope !== undefined) {
+          const tree = starryNight.highlight(code, scope);
+          return toHtml(tree);
+        }
+
+        return code;
+      },
+    });
+  }, [readme, starryNight]);
 
   if (error) {
     return <ErrorPage statusCode={error.status} title={error.message} />;
@@ -98,12 +124,6 @@ const PackageView = () => {
       setReadme(value);
     });
 
-  marked.setOptions({
-    highlight: (code, lang) => {
-      const language = hljs.getLanguage(lang) ? lang : "plaintext";
-      return hljs.highlight(code, { language }).value;
-    },
-  });
   let dirtyReadme = marked.parse(readme);
 
   return (
@@ -119,7 +139,7 @@ const PackageView = () => {
           width: "100vw%",
           height: "50vh",
           padding: "20px",
-          backgroundColor: isDarkTheme ? "#1a1919" : "#f0eee4",
+          backgroundColor: theme.palette.background.package,
           position: "sticky",
           top: "25vh",
         }}
@@ -127,12 +147,16 @@ const PackageView = () => {
         <Grid ml="70vw">
           <Grid container spacing="10vw">
             <Grid item>
-              <Typography variant="overline">Package</Typography>
+              <Typography variant="overline" sx={{ opacity: 0.6 }}>
+                Package
+              </Typography>
               <br />
               <Typography>{name}</Typography>
             </Grid>
             <Grid item>
-              <Typography variant="overline">Author</Typography>
+              <Typography variant="overline" sx={{ opacity: 0.6 }}>
+                Author
+              </Typography>
               <br />
               <Link
                 underline="hover"
@@ -145,11 +169,15 @@ const PackageView = () => {
           </Grid>
 
           <br />
-          <Typography variant="overline">Description</Typography>
+          <Typography variant="overline" sx={{ opacity: 0.6 }}>
+            Description
+          </Typography>
           <br />
           <Typography>{description}</Typography>
           <br />
-          <Typography variant="overline">Repository</Typography>
+          <Typography variant="overline" sx={{ opacity: 0.6 }}>
+            Repository
+          </Typography>
           <br />
           <Button
             variant="outlined"
@@ -161,7 +189,9 @@ const PackageView = () => {
           </Button>
           <br />
           <br />
-          <Typography variant="overline">Versions</Typography>
+          <Typography variant="overline" sx={{ opacity: 0.6 }}>
+            Versions
+          </Typography>
           <Grid>
             <Button
               variant="contained"
@@ -180,7 +210,9 @@ const PackageView = () => {
             {versions.map((key) => (
               <Button
                 key={key}
+                // variant="outlined"
                 variant="contained"
+                sx={{ color: "white" }}
                 size="small"
                 style={{ marginRight: "10px" }}
                 onClick={(event) => {
@@ -224,17 +256,20 @@ const PackageView = () => {
           mt="30px"
           width="40%"
           minHeight="80vh"
-          sx={{ zIndex: 1 }}
+          sx={{ zIndex: 1, backgroundImage: "none" }}
           pl="1%"
           pr="1%"
         >
-          <div
+          <Box
+            sx={{ fontFamily: "Hubot" }}
+            className="readme"
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(dirtyReadme, {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat([
                   "details",
                   "summary",
                 ]),
+                allowedAttributes: { span: ["class"] },
               }),
             }}
           />

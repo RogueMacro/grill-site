@@ -59,6 +59,7 @@ export default function PackageSearch() {
           alignItems="center"
           justifyContent="top"
           paddingTop="5vh"
+          marginBottom="5vh"
         >
           <TextField
             label="Search..."
