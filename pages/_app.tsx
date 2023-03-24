@@ -21,11 +21,7 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
 import { useRouter } from "next/router";
 import { getIndex } from "../lib/index";
-import {
-  createTheme,
-  PaletteColor,
-  PaletteColorOptions,
-} from "@mui/material/styles";
+import { createTheme, PaletteColorOptions, Theme } from "@mui/material/styles";
 import {
   Experimental_CssVarsProvider as CssVarsProvider,
   useColorScheme,
@@ -34,6 +30,20 @@ import {
 import "../styles/code.css";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+
+declare module "@mui/material/styles/createPalette" {
+  interface TypeBackground {
+    package?: string;
+  }
+
+  interface PaletteOptions {
+    code?: PaletteColorOptions;
+  }
+}
+
+declare module "@mui/styles/defaultTheme" {
+  interface DefaultTheme extends Theme {}
+}
 
 const base = createTheme({
   typography: {
