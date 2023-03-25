@@ -140,7 +140,7 @@ export default function App({ Component, pageProps, ...appProps }) {
             <CssBaseline />
             <NavBar />
             <Box pt="64px" width="100%">
-              {index ? <Component {...pageProps} /> : <>loading...</>}
+              {index ? <Component {...pageProps} /> : <></>}
             </Box>
           </IndexContext.Provider>
         </CssVarsProvider>

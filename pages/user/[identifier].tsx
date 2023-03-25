@@ -40,7 +40,7 @@ export default function Profile() {
   }
 
   if (!user) {
-    return <>loading...</>;
+    return;
   }
 
   return (

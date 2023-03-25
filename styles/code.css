@@ -10,6 +10,20 @@ pre {
   color: var(--mui-palette-primary-main);
 }
 
+blockquote {
+  margin: 0;
+  padding: 0 1em;
+  border-left: 0.25em solid;
+  color: var(--mui-palette-text-disabled);
+}
+
+:not(pre) > code {
+  background-color: var(--mui-palette-background-default);
+  border-radius: 6px;
+  padding: 0.3em 0.5em;
+  font-size: 85%;
+}
+
 /* This is a theme distributed by `starry-night`.
  * It’s based on what GitHub uses on their site.
  * See <https://github.com/wooorm/starry-night> for more info. */
