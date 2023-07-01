@@ -2,12 +2,23 @@ import TOML from "@iarna/toml";
 
 export class Index {
   packages: { [key: string]: PackageEntry };
-  sha: string;
+  packageShas: { [key: string]: string };
 
-  find(packageName: string): PackageEntry {
+  get(packageName: string): PackageEntry {
     for (let key in this.packages) {
-      if (key.toLowerCase() == packageName.toLowerCase()) {
+      if (key == packageName) {
+        console.log("CACHED");
         return this.packages[key];
+      }
+    }
+
+    return null;
+  }
+
+  getSha(packageName: string): string {
+    for (let key in this.packageShas) {
+      if (key == packageName) {
+        return this.packageShas[key];
       }
     }
 
@@ -27,15 +38,32 @@ export class PackageVersion {
 }
 
 export const getIndex = async (): Promise<Index> => {
-  const file = await (
-    await fetch(
-      "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml"
-    )
+  const files: any[] = await (
+    await fetch("https://api.github.com/repos/RogueMacro/grill-index/contents")
   ).json();
 
-  const text = Buffer.from(file.content, file.encoding).toString();
-  return Object.assign(new Index(), {
-    packages: TOML.parse(text),
-    sha: file.sha,
+  let packages = {};
+  let packageShas = {};
+  for (let file of files) {
+    packageShas[file.name] = file.sha;
+    const specificFile = await (
+      await fetch(
+        "https://api.github.com/repos/RogueMacro/grill-index/contents/" +
+          file.name
+      )
+    ).json();
+    const text = Buffer.from(
+      specificFile.content,
+      specificFile.encoding
+    ).toString();
+    const entry = TOML.parse(text) as {} as PackageEntry;
+    packages[file.name] = entry;
+  }
+
+  let index = Object.assign(new Index(), {
+    packages,
+    packageShas,
   });
+
+  return index;
 };

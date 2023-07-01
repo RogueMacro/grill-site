@@ -49,7 +49,7 @@ const PackageView = () => {
       return;
     }
 
-    if (!index.find(name)) {
+    if (!index.get(name)) {
       setError({ status: 404, message: `Could not find package '${name}'` });
       return;
     }
@@ -96,7 +96,7 @@ const PackageView = () => {
     return <LinearProgress />;
   }
 
-  const pkg = index.find(name);
+  const pkg = index.get(name);
   const description = pkg.description;
   const versions = Object.keys(pkg.versions).sort().reverse();
   const latestVersion = versions.at(0);

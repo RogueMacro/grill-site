@@ -1,6 +1,6 @@
 import { NextApiHandler } from "next/types";
 import { getPrivateUsers } from "../../lib/users";
-import { getIndex } from "../../lib/index";
+import { PackageEntry, getIndex } from "../../lib/index";
 import request from "request";
 import TOML from "@iarna/toml";
 
@@ -74,7 +74,9 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     let index = await getIndex();
-    if (!index.find(packageName)) {
+    let newPackage: PackageEntry = null;
+    let exists = false;
+    if (!index.get(packageName)) {
       if (!body.hasOwnProperty("create_url")) {
         return onResponse(res, resolve).status(400).json({
           message:
@@ -89,7 +91,7 @@ const handler: NextApiHandler = async (req, res) => {
         });
       }
 
-      index.packages[packageName] = {
+      newPackage = {
         url: body.create_url,
         description: "",
         versions: {},
@@ -98,6 +100,9 @@ const handler: NextApiHandler = async (req, res) => {
       if (!user.packages.includes(packageName)) {
         await makeUserPackageAuthor(user, packageName);
       }
+    } else {
+      newPackage = index.get(packageName);
+      exists = true;
     }
 
     if (!user.packages.includes(packageName)) {
@@ -108,14 +113,14 @@ const handler: NextApiHandler = async (req, res) => {
         });
     }
 
-    const versions = index.find(packageName).versions;
+    const versions = newPackage.versions;
     if (version in versions) {
       return onResponse(res, resolve)
         .status(400)
         .json({ message: "Version already exists." });
     }
 
-    if (!(await revisionExists(index.find(packageName).url, revision))) {
+    if (!(await revisionExists(newPackage.url, revision))) {
       return onResponse(res, resolve)
         .status(400)
         .json({ message: "Revision was not found." });
@@ -126,19 +131,27 @@ const handler: NextApiHandler = async (req, res) => {
       deps: dependencies,
     };
 
-    index.find(packageName).description = description;
+    newPackage.description = description;
+
+    let requestBody = {
+      message: exists
+        ? `bump ${packageName} to ${version}`
+        : `create ${packageName}`,
+      content: Buffer.from(
+        TOML.stringify(newPackage as { [key: string]: any })
+      ).toString("base64"),
+    };
+
+    if (exists) {
+      requestBody["sha"] = index.getSha(packageName);
+    }
 
     request.put(
-      "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml",
+      "https://api.github.com/repos/RogueMacro/grill-index/contents/" +
+        packageName,
       {
         json: true,
-        body: {
-          message: `bump ${packageName} to ${version}`.toString(),
-          content: Buffer.from(
-            TOML.stringify(index.packages as { [key: string]: any })
-          ).toString("base64"),
-          sha: index.sha,
-        },
+        body: requestBody,
         headers: {
           "User-Agent": "node.js",
           Authorization: `token ${process.env.GITHUB_TOKEN}`,

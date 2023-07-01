@@ -85,7 +85,7 @@ export default function PackageSearch() {
           alignItems="center"
           justifyContent="top"
         >
-          <Typography variant="h4" marginBottom="6px">
+          {/* <Typography variant="h4" marginBottom="6px">
             Newly published
           </Typography>
           <Stack width="80%" spacing={1}>
@@ -107,7 +107,7 @@ export default function PackageSearch() {
             </>
           ) : (
             <></>
-          )}
+          )} */}
         </Grid>
       </Box>
     </>
