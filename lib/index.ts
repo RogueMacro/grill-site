@@ -45,6 +45,7 @@ export const getIndex = async (): Promise<Index> => {
   let packages = {};
   let packageShas = {};
   for (let file of files) {
+    if (file.name === "index.toml") continue;
     packageShas[file.name] = file.sha;
     const specificFile = await (
       await fetch(
