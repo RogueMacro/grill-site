@@ -162,7 +162,7 @@ const handler: NextApiHandler = async (req, res) => {
           return onResponse(res, resolve)
             .status(500)
             .json({
-              message: "Could not make GitHub API request",
+              message: `Could not make GitHub API request: ${error}: ${response.body.message}`,
               statusCode: response.statusCode,
               response: response.body.message || response.body,
             });
