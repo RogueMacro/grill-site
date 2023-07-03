@@ -203,7 +203,7 @@ const handler: NextApiHandler = async (req, res) => {
           return onResponse(res, resolve)
             .status(500)
             .json({
-              message: `Could not make GitHub API request to update index.toml: ${error}`,
+              message: `Could not make GitHub API request to update index.toml: ${response.body.message}`,
               statusCode: response.statusCode,
               response: response.body.message || response.body,
             });
