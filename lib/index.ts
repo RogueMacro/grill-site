@@ -37,10 +37,28 @@ export class PackageVersion {
   deps: { [key: string]: string };
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export const getIndex = async (): Promise<Index> => {
-  const files: any[] = await (
-    await fetch("https://api.github.com/repos/RogueMacro/grill-index/contents")
-  ).json();
+  let files: any[] = null;
+
+  while (true) {
+    const response = await (
+      await fetch(
+        "https://api.github.com/repos/RogueMacro/grill-index/contents"
+      )
+    ).json();
+
+    if (
+      response.message &&
+      response.message.startsWith("API rate limit exceeded")
+    ) {
+      await sleep(10_000);
+    } else {
+      files = response as any[];
+      break;
+    }
+  }
 
   let packages = {};
   let packageShas = {};
