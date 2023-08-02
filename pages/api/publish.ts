@@ -173,47 +173,6 @@ const handler: NextApiHandler = async (req, res) => {
         }
       }
     );
-
-    // only for backward compatibility for "rust" grill
-    // to be removed in "beef" grill
-    index.packages[packageName] = newPackage;
-    const indexFile = await (
-      await fetch(
-        "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml"
-      )
-    ).json();
-    request.put(
-      "https://api.github.com/repos/RogueMacro/grill-index/contents/index.toml",
-      {
-        json: true,
-        body: {
-          message: `bump ${packageName} to ${version}`,
-          content: Buffer.from(
-            TOML.stringify(index.packages as { [key: string]: any })
-          ).toString("base64"),
-          sha: indexFile.sha,
-        },
-        headers: {
-          "User-Agent": "node.js",
-          Authorization: `token ${process.env.GITHUB_TOKEN}`,
-        },
-      },
-      function (error, response, body) {
-        if (error || response.statusCode != 200) {
-          return onResponse(res, resolve)
-            .status(500)
-            .json({
-              message: `Could not make GitHub API request to update index.toml: ${response.body.message}`,
-              statusCode: response.statusCode,
-              response: response.body.message || response.body,
-            });
-        } else {
-          return onResponse(res, resolve)
-            .status(200)
-            .send(`Published v${version} of ${packageName}`);
-        }
-      }
-    );
   });
 
   await worker;
